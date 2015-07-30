@@ -1,9 +1,13 @@
 require 'date'
 
 class Finder
+  class NoMatchingFiles < RuntimeError; end;
+
   class << self
     def latest(name)
       files = Dir.glob(["#{ ENV["HOME"] }/workspace/*#{name}*.txt"])
+
+      raise NoMatchingFiles if files.empty?
 
       files.sort_by! do |file|
         last_date = /\d+-\d+-\d+_[[:alpha:]]+\.txt$/.match file
@@ -12,8 +16,6 @@ class Finder
         date = DateTime.parse(last_date.to_s)
         date
       end
-
-      throw RuntimeError if files.empty?
 
       files.last
     end
