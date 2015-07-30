@@ -1,37 +1,7 @@
-require File.expand_path('lib/combiner',File.dirname(__FILE__))
+require 'combiner'
 require 'csv'
-require 'date'
-
-def latest(name)
-  files = Dir["#{ ENV["HOME"] }/workspace/*#{name}*.txt"]
-
-  files.sort_by! do |file|
-    last_date = /\d+-\d+-\d+_[[:alpha:]]+\.txt$/.match file
-    last_date = last_date.to_s.match /\d+-\d+-\d+/
-
-    date = DateTime.parse(last_date.to_s)
-    date
-  end
-
-  throw RuntimeError if files.empty?
-
-  files.last
-end
-
-class String
-	def from_german_to_f
-		self.gsub(',', '.').to_f
-	end
-end
-
-class Float
-	def to_german_s
-		self.to_s.gsub('.', ',')
-	end
-end
 
 class Modifier
-
 	KEYWORD_UNIQUE_ID = 'Keyword Unique ID'
 	LAST_VALUE_WINS = ['Account ID', 'Account Name', 'Campaign', 'Ad Group', 'Keyword', 'Keyword Type', 'Subid', 'Paused', 'Max CPC', 'Keyword Unique ID', 'ACCOUNT', 'CAMPAIGN', 'BRAND', 'BRAND+CATEGORY', 'ADGROUP', 'KEYWORD']
 	LAST_REAL_VALUE_WINS = ['Last Avg CPC', 'Last Avg Pos']
@@ -43,6 +13,16 @@ class Modifier
 	def initialize(saleamount_factor, cancellation_factor)
 		@saleamount_factor = saleamount_factor
 		@cancellation_factor = cancellation_factor
+	end
+
+  def sort(file)
+		output = "#{file}.sorted"
+		content_as_table = parse(file)
+		headers = content_as_table.headers
+		index_of_key = headers.index('Clicks')
+		content = content_as_table.sort_by { |a| -a[index_of_key].to_i }
+		write(content, headers, output)
+		return output
 	end
 
 	def modify(output, input)
@@ -165,23 +145,4 @@ class Modifier
 			end
 		end
 	end
-
-	public
-	def sort(file)
-		output = "#{file}.sorted"
-		content_as_table = parse(file)
-		headers = content_as_table.headers
-		index_of_key = headers.index('Clicks')
-		content = content_as_table.sort_by { |a| -a[index_of_key].to_i }
-		write(content, headers, output)
-		return output
-	end
 end
-
-modified = input = latest('project_2012-07-27_2012-10-10_performancedata')
-modification_factor = 1
-cancellaction_factor = 0.4
-modifier = Modifier.new(modification_factor, cancellaction_factor)
-modifier.modify(modified, input)
-
-puts "DONE modifying"
