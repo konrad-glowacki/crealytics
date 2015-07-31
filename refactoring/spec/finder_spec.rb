@@ -19,12 +19,12 @@ RSpec.describe Finder do
 
     context "matching files exists" do
       let(:sorted_results) do
-        %w(performancedata_2012-10-01_one.txt performancedata_2012-10-11_two.txt performancedata_2012-10-05_three.txt)
+        %w(project_2012-10-01_performancedata.txt project_2012-10-11_performancedata.txt project_2012-10-05_performancedata.txt)
       end
 
       it "returns newest file" do
         expect(Dir).to receive(:glob) { sorted_results }
-        expect(subject).to eq('performancedata_2012-10-11_two.txt')
+        expect(subject).to eq('project_2012-10-11_performancedata.txt')
       end
     end
   end
