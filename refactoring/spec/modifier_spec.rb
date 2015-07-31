@@ -18,13 +18,13 @@ RSpec.describe Modifier do
   end
 
   describe "#modify" do
-    after do
-      result_filename = File.dirname(__FILE__) + '/fixtures/performancedata_example_0.txt'
-      File.delete(result_filename)
-    end
+    let(:result_filename) { File.dirname(__FILE__) + '/fixtures/performancedata_example_0.txt' }
+
+    after { File.delete(result_filename) }
 
     it "modifies input filename" do
       subject.modify(input_filename, input_filename)
+      expect(File).to exist(result_filename)
     end
   end
 end

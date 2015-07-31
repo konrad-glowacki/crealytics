@@ -9,6 +9,8 @@ class Modifier
   LAST_REAL_VALUE_WINS = ['Last Avg CPC', 'Last Avg Pos']
   INT_VALUES = ['Clicks', 'Impressions', 'ACCOUNT - Clicks', 'CAMPAIGN - Clicks', 'BRAND - Clicks', 'BRAND+CATEGORY - Clicks', 'ADGROUP - Clicks', 'KEYWORD - Clicks']
   FLOAT_VALUES = ['Avg CPC', 'CTR', 'Est EPC', 'newBid', 'Costs', 'Avg Pos']
+  CANCELLATION_FACTOR_VALUES = ['number of commissions']
+  CANCELLATION_AND_SALEAMOUNT_FACTOR_VALUES = ['Commission Value', 'ACCOUNT - Commission Value', 'CAMPAIGN - Commission Value', 'BRAND - Commission Value', 'BRAND+CATEGORY - Commission Value', 'ADGROUP - Commission Value', 'KEYWORD - Commission Value']
 
   LINES_PER_FILE = 120000
 
@@ -65,11 +67,11 @@ class Modifier
             if not headers_written
               csv << merged.keys
               headers_written = true
-              line_count +=1
+              line_count += 1
             end
 
             csv << merged
-            line_count +=1
+            line_count += 1
 
           rescue StopIteration
             done = true
@@ -111,11 +113,11 @@ class Modifier
       hash[key] = hash[key][0].from_german_to_f.to_german_s
     end
 
-    ['number of commissions'].each do |key|
+    CANCELLATION_FACTOR_VALUES.each do |key|
       hash[key] = (@cancellation_factor * hash[key][0].from_german_to_f).to_german_s
     end
 
-    ['Commission Value', 'ACCOUNT - Commission Value', 'CAMPAIGN - Commission Value', 'BRAND - Commission Value', 'BRAND+CATEGORY - Commission Value', 'ADGROUP - Commission Value', 'KEYWORD - Commission Value'].each do |key|
+    CANCELLATION_AND_SALEAMOUNT_FACTOR_VALUES.each do |key|
       hash[key] = (@cancellation_factor * @saleamount_factor * hash[key][0].from_german_to_f).to_german_s
     end
 
